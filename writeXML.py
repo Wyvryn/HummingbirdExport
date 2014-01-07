@@ -8,7 +8,7 @@ class writeXML(object):
     def writeBof(self):
         self.xmlData += '<?xml version="1.0" encoding="UTF-8" ?>\n'
         self.xmlData += '<!--\n'
-        self.xmlData += 'Created using Wyvryn\'s Hummingbird Exporter\n'
+        self.xmlData += 'Created using Wyvryn\'s Hummingbird Exporter\nhttp://hummingbirdexport.appspot.com/\n'
         self.xmlData += (time.strftime("%m/%d/%Y"))
         self.xmlData += '\n-->\n\n'
         
