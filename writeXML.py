@@ -63,11 +63,6 @@ class writeXML(object):
                 self.xmlData += i['notes'].encode('utf8')
             self.xmlData += "</my_notes>\n"
             
-            self.xmlData += "\t\t\t<my_notes_present>"
-            if i['notes_present']:
-                self.xmlData += i['notes_present'].encode('utf8')
-            self.xmlData += "</my_notes_present>\n"
-            
             self.xmlData += "\t\t\t<last_watched>"
             if i['last_watched']:
                 self.xmlData += i['last_watched'].encode('utf8')
