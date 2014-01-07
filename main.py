@@ -25,19 +25,7 @@ def submit():
         
         xml.writeBof()
         
-        data = resp.getInfo(uname, "currently-watching")
-        xml.write(data)
-        
-        data = resp.getInfo(uname, "completed")
-        xml.write(data)
-        
-        data = resp.getInfo(uname, "plan-to-watch")
-        xml.write(data)
-        
-        data = resp.getInfo(uname, "on-hold")
-        xml.write(data)
-        
-        data = resp.getInfo(uname, "dropped")
+        data = resp.getInfo(uname)
         xml.write(data)
         
         xml.writeEof()

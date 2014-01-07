@@ -7,7 +7,7 @@ class getRequest(object):
     def __init__(self):
         pass
     
-    def getInfo(self, uname, status):
+    def getInfo(self, uname):
         """
         The Hummingbird api requires a valid user and password for authentication before
         returning any data. For ease of use I have created an account to do this, rather than
@@ -34,7 +34,7 @@ class getRequest(object):
         authToken = response.read()
         authToken = authToken[1:-1]
 
-        request = urllib2.Request("https://hummingbirdv1.p.mashape.com/users/" + uname + "/library?status=" + status + "&auth_token=" + authToken)
+        request = urllib2.Request("https://hummingbirdv1.p.mashape.com/users/" + uname + "/library?auth_token=" + authToken)
 
         """
         Mashape requires an account to access their api, for more information of Mashape and
