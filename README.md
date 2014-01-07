@@ -6,3 +6,8 @@ See it in action at [http://hummingbirdexport.appspot.com/](http://hummingbirdex
 
 ##Source Notes
 In getRequest.py, three variables have been ommited: apiunam, passw, and X-Mashape-Authorization. If you want to run the code locally, you'll need to add values to these fields.
+
+##License
+Code is licensed under CC BY-SA 4.0
+http://creativecommons.org/licenses/by-sa/4.0/
+http://creativecommons.org/licenses/by-sa/4.0/legalcode
