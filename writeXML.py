@@ -1,4 +1,5 @@
 import time
+import findAID
 
 class writeXML(object):
 
@@ -16,8 +17,10 @@ class writeXML(object):
         
     def write(self, data):
         for i in data:
+
+
             self.xmlData += "\t\t<anime>\n"
-    
+
             self.xmlData += "\t\t\t<series_title>"
             if i['anime']['title']:
                 self.xmlData += i['anime']['title'].encode('utf8')
