@@ -1,6 +1,7 @@
 import urllib
 import urllib2
 import json
+from keys import api, mashape
 
 class getRequest(object):
 
@@ -8,24 +9,11 @@ class getRequest(object):
         pass
     
     def getInfo(self, uname):
-        """
-        The Hummingbird api requires a valid user and password for authentication before
-        returning any data. For ease of use I have created an account to do this, rather than
-        have a user input their personal username and password. apiuname and passw have been
-        intentionally left blank in the public source
-        """
-        apiuname = ""
-        passw = ""
         url = 'https://hummingbirdv1.p.mashape.com/users/authenticate'
-        values = {'username' : apiuname,
-                  'password' : passw }
+        values = {'username' : api['user'],
+                  'password' : api['passw']}
 
-        """
-        Mashape requires an account to access their api, for more information of Mashape and
-        the Hummingbird API, visit https://www.mashape.com/vikhyat/hummingbird-v1
-        My API key has been intentionally left blank in the public source.
-        """     
-        headers = { "X-Mashape-Authorization": "" }
+        headers = { "X-Mashape-Authorization": mashape }
 
         data = urllib.urlencode(values)
         req = urllib2.Request(url, data, headers)
@@ -34,13 +22,7 @@ class getRequest(object):
         authToken = authToken[1:-1]
 
         request = urllib2.Request("https://hummingbirdv1.p.mashape.com/users/" + uname + "/library?auth_token=" + authToken)
-        
-        """
-        Mashape requires an account to access their api, for more information of Mashape and
-        the Hummingbird API, visit https://www.mashape.com/vikhyat/hummingbird-v1
-        My API key has been intentionally left blank in the public source.
-        """     
-        request.add_header("X-Mashape-Authorization", "")
+        request.add_header("X-Mashape-Authorization", mashape)
         response = urllib2.urlopen(request)
 
         return json.loads(response.read())

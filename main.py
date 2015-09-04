@@ -32,6 +32,7 @@ def submit():
         uname =  request.form["uname"]
         method = request.form["method"]
         if method == "1":
+            """Write MAL Format XML"""
             resp = gr.getRequest()
             xml = wmx.writeXML()
 
@@ -60,6 +61,7 @@ def submit():
             return response
 
         if method == "0":
+            """Write XML using values from Hummingbird API"""
             resp = gr.getRequest()
             xml = wx.writeXML()
 
