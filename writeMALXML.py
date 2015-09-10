@@ -3,7 +3,8 @@ import findAID
 import requests
 import re
 import redis
-from keys import r, redisPw
+import logging
+from keys import r, redisPw, httpAuth, httpUserAgent
 
 
 class writeXML(object):
@@ -31,9 +32,30 @@ class writeXML(object):
 
     def write(self, data):
         for i in data:
+            from keys import r
             res = redis.StrictRedis(host=r['host'], port=r['port'], db=r['db'],
                 password = redisPw)
             malid = res.get(i['anime']['title'].encode('utf8'))
+
+            if not malid:
+                title = i['anime']['title'].encode('utf8')
+                title = title.strip()
+                title = title.replace(" ", "%20")
+                url = "http://myanimelist.net/api/anime/search.xml?q=%s" % title
+                headers = {
+                    'Authorization': httpAuth,
+                    'User-Agent': httpUserAgent}
+                r = requests.get(url, headers=headers)
+                try:
+                    x = re.compile(".*<id>").split(r.text.encode('utf8'))
+                    y = re.compile("</id>.*").split(x[1])
+                    malid = y[0]
+                except:
+                    logging.warn("Couldn't find id for %s" % i['anime']['title'])
+
+                if malid:
+                    logging.info("Addind %s with id %s" % (i['anime']['title'].encode('utf8'), malid))
+                    res.set(i['anime']['title'].encode('utf8'), int(malid))
 
             if malid:
                 self.xmlData += "\t\t<anime>\n"
