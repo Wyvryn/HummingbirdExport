@@ -4,7 +4,7 @@ import re
 import redis
 import logging
 from hummingbirdexport.keys import redisPw, httpAuth, httpUserAgent
-
+logging.getLogger().setLevel(logging.INFO)
 
 class writeXML(object):
 
