@@ -4,7 +4,6 @@ import re
 import redis
 import logging
 from hummingbirdexport.keys import redisPw, httpAuth, httpUserAgent
-logging.getLogger().setLevel(logging.INFO)
 
 class writeXML(object):
 
@@ -53,7 +52,7 @@ class writeXML(object):
                     logging.warn("Couldn't find id for %s" % i['anime']['title'])
 
                 if malid:
-                    logging.info("Addind %s with id %s" % (i['anime']['title'].encode('utf8'), malid))
+                    logging.warn("Addind %s with id %s" % (i['anime']['title'].encode('utf8'), malid))
                     res.set(i['anime']['title'].encode('utf8'), int(malid))
 
             if malid:
