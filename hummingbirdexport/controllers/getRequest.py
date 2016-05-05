@@ -1,28 +1,18 @@
-import urllib
-import urllib2
+import requests
 import json
-from hummingbirdexport.keys import api, mashape
+import hummingbirdexport.config as config
 
+# TODO: This probably shouldn't even be a class.
 class getRequest(object):
-
-    def __init__(self):
-        pass
-    
-    def getInfo(self, uname):
+    def getInfo(self, username):
+        # Authenticate Hummingbird API client
         url = 'https://hummingbirdv1.p.mashape.com/users/authenticate'
-        values = {'username' : api['user'],
-                  'password' : api['passw']}
+        headers = { "X-Mashape-Authorization": config.humming_mashape }
+        response = requests.post(url, headers=headers, data=config.humming_auth)
+        auth_token = response.text.encode('utf8')[1:-1]
 
-        headers = { "X-Mashape-Authorization": mashape }
+        # Fetch user library page.
+        url = "https://hummingbirdv1.p.mashape.com/users/{}/library".format(username)
+        response = requests.get(url, params=dict(auth_token=auth_token), headers=headers)
 
-        data = urllib.urlencode(values)
-        req = urllib2.Request(url, data, headers)
-        response = urllib2.urlopen(req)
-        authToken = response.read()
-        authToken = authToken[1:-1]
-
-        request = urllib2.Request("https://hummingbirdv1.p.mashape.com/users/" + uname + "/library?auth_token=" + authToken)
-        request.add_header("X-Mashape-Authorization", mashape)
-        response = urllib2.urlopen(request)
-
-        return json.loads(response.read())
+        return json.loads(response.text.encode('utf8'))

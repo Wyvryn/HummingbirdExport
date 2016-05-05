@@ -1,9 +1,9 @@
 import time
 import requests
 import re
-import redis
+from redis import StrictRedis
 import logging
-from hummingbirdexport.keys import redisPw, httpAuth, httpUserAgent
+import hummingbirdexport.config as config
 
 class writeXML(object):
 
@@ -29,31 +29,39 @@ class writeXML(object):
         self.fail += '\t<myanimelist>\n\n'
 
     def write(self, data):
+        # Open Redis client if Redis caching enabled.
+        if config.redis['enabled']:
+            redis = StrictRedis(host=config.redis['host'],
+                                port=config.redis['port'],
+                                db=config.redis['db'],
+                                password=config.redis['password'])
+        else:
+            redis = None
+
         for i in data:
-            from hummingbirdexport.keys import r
-            res = redis.StrictRedis(host=r['host'], port=r['port'], db=r['db'],
-                password = redisPw)
-            malid = res.get(i['anime']['title'].encode('utf8'))
+            if redis:
+                # Check Redis for cached MAL id of anime:
+                malid = redis.get(i['anime']['title'].encode('utf8'))
+            else:
+                malid = None
 
             if not malid:
-                title = i['anime']['title'].encode('utf8')
-                title = title.strip()
-                title = title.replace(" ", "%20")
-                url = "http://myanimelist.net/api/anime/search.xml?q=%s" % title
-                headers = {
-                    'Authorization': httpAuth,
-                    'User-Agent': httpUserAgent}
-                r = requests.get(url, headers=headers)
-                try:
-                    x = re.compile(".*<id>").split(r.text.encode('utf8'))
-                    y = re.compile("</id>.*").split(x[1])
-                    malid = y[0]
-                except:
-                    logging.warn("Couldn't find id for %s" % i['anime']['title'])
+                # Wait so MAL doesn't block us.
+                time.sleep(2.5)
 
-                if malid:
-                    logging.warn("Addind %s with id %s" % (i['anime']['title'].encode('utf8'), malid))
-                    res.set(i['anime']['title'].encode('utf8'), int(malid))
+                # Fetch the ID from MAL's Api.
+                title = i['anime']['title'].encode('utf8').strip()
+                url = "http://myanimelist.net/api/anime/search.xml"
+                res = requests.get(url, params=dict(q=title), auth=config.mal_auth)
+                match = re.search(r"<id>(.*)</id>", res.text.encode('utf8'))
+                if match:
+                    malid = match.group(1)
+                    logging.warn("Adding {} with id {}".format(i['anime']['title'].encode('utf8'), malid))
+                    if redis:
+                        redis.set(i['anime']['title'].encode('utf8'), int(malid))
+                else:
+                    logging.warn("Couldn't find id for %s" % i['anime']['title'])
+                    print ("Response: {}".format(res.text.encode('utf8')))
 
             if malid:
                 self.xmlData += "\t\t<anime>\n"
