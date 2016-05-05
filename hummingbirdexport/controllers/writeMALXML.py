@@ -41,7 +41,7 @@ class writeXML(object):
         for i in data:
             if redis:
                 # Check Redis for cached MAL id of anime:
-                malid = redis.get(i['anime']['title'].encode('utf8'))
+                malid = redis.get(i['anime']['title'])
             else:
                 malid = None
 
@@ -50,32 +50,30 @@ class writeXML(object):
                 time.sleep(2.5)
 
                 # Fetch the ID from MAL's Api.
-                title = i['anime']['title'].encode('utf8').strip()
+                title = i['anime']['title'].strip()
                 url = "http://myanimelist.net/api/anime/search.xml"
                 res = requests.get(url, params=dict(q=title), auth=config.mal_auth)
-                match = re.search(r"<id>(.*)</id>", res.text.encode('utf8'))
+                match = re.search(r"<id>(.*)</id>", res.text)
                 if match:
                     malid = match.group(1)
-                    logging.warn("Adding {} with id {}".format(i['anime']['title'].encode('utf8'), malid))
+                    logging.warn("Adding {} with id {}".format(i['anime']['title'], malid))
                     if redis:
-                        redis.set(i['anime']['title'].encode('utf8'), int(malid))
+                        redis.set(i['anime']['title'], int(malid))
                 else:
                     logging.warn("Couldn't find id for %s" % i['anime']['title'])
-                    print ("Response: {}".format(res.text.encode('utf8')))
+                    print("Response: {}".format(res.text))
 
             if malid:
                 self.xmlData += "\t\t<anime>\n"
 
                 self.xmlData += "\t\t\t<series_animedb_id>"
 
-                self.xmlData += malid
+                self.xmlData += str(malid)
                 self.xmlData += "</series_animedb_id>\n"
 
                 self.xmlData += "\t\t\t<series_title>"
                 if i['anime']['title']:
-
-                    self.xmlData += "<![CDATA[" + i[
-                        'anime']['title'].encode('utf8') + "]]>"
+                    self.xmlData += "<![CDATA[" + i['anime']['title'] + "]]>"
                 self.xmlData += "</series_title>\n"
 
                 self.xmlData += "\t\t\t<series_type></series_type>\n"
@@ -118,7 +116,7 @@ class writeXML(object):
                 self.xmlData += "\t\t\t<my_comments>"
                 self.xmlData += "<![CDATA["
                 if i['notes']:
-                    self.xmlData += i['notes'].encode('utf8')
+                    self.xmlData += i['notes']
                 self.xmlData += "]]></my_comments>\n"
 
                 self.xmlData += "\t\t\t<my_times_watched>"
@@ -141,7 +139,7 @@ class writeXML(object):
                 self.fail += "\t\t<anime>\n"
                 self.fail += "\t\t\t<series_title>"
                 if i['anime']['title']:
-                    self.fail += "<![CDATA[" + i['anime']['title'].encode('utf8') + "]]>"
+                    self.fail += "<![CDATA[" + i['anime']['title'] + "]]>"
                 self.fail += "</series_title>\n"
 
                 self.fail += "\t\t\t<id>"
@@ -151,7 +149,7 @@ class writeXML(object):
 
                 self.fail += "\t\t\t<series_type>"
                 if i['anime']['show_type']:
-                    self.fail += i['anime']['show_type'].encode('utf8')
+                    self.fail += i['anime']['show_type']
                 self.fail += "</series_type>\n"
 
                 self.fail += "\t\t\t<series_episodes>"
@@ -171,7 +169,7 @@ class writeXML(object):
 
                 self.fail += "\t\t\t<my_status>"
                 if i['status']:
-                    self.fail += i['status'].encode('utf8')
+                    self.fail += i['status']
                 self.fail += "</my_status>\n"
 
                 self.fail += "\t\t\t<my_times_watched>"
@@ -181,12 +179,12 @@ class writeXML(object):
 
                 self.fail += "\t\t\t<my_comments>"
                 if i['notes']:
-                    self.fail += "<![CDATA[" + i['notes'].encode('utf8') + "]]>"
+                    self.fail += "<![CDATA[" + i['notes'] + "]]>"
                 self.fail += "</my_comments>\n"
 
                 self.fail += "\t\t\t<last_watched>"
                 if i['last_watched']:
-                    self.fail += i['last_watched'].encode('utf8')
+                    self.fail += i['last_watched']
                 self.fail += "</last_watched>\n"
 
                 self.fail += "\t\t</anime>\n\n"

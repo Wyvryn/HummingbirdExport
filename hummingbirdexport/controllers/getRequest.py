@@ -9,10 +9,10 @@ class getRequest(object):
         url = 'https://hummingbirdv1.p.mashape.com/users/authenticate'
         headers = { "X-Mashape-Authorization": config.humming_mashape }
         response = requests.post(url, headers=headers, data=config.humming_auth)
-        auth_token = response.text.encode('utf8')[1:-1]
+        auth_token = response.text[1:-1]
 
         # Fetch user library page.
         url = "https://hummingbirdv1.p.mashape.com/users/{}/library".format(username)
         response = requests.get(url, params=dict(auth_token=auth_token), headers=headers)
 
-        return json.loads(response.text.encode('utf8'))
+        return json.loads(response.text)

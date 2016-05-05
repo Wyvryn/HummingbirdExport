@@ -3,8 +3,9 @@ from flask import Blueprint, render_template, flash, request, redirect, url_for,
 import hummingbirdexport.controllers.getRequest as gr
 import hummingbirdexport.controllers.writeMALXML as wmx
 import hummingbirdexport.controllers.writeXML as wx
-import tarfile, StringIO, cStringIO
+import tarfile
 import time
+from io import BytesIO
 
 main = Blueprint('main', __name__)
 
@@ -37,15 +38,19 @@ def submit():
 
             fail = xml.writeEof()
 
-            c = cStringIO.StringIO()
+            c = BytesIO()
             t = tarfile.open(mode='w', fileobj=c)
 
-            tarinfo = tarfile.TarInfo("Hummingbird-to-MAL-Export-" + (time.strftime("%m-%d-%Y")) + ".xml")
-            tarinfo.size = len(xml.xmlData)
-            tarinfo2 = tarfile.TarInfo("Failure-Report.xml")
-            tarinfo2.size = len(fail)
-            t.addfile(tarinfo, StringIO.StringIO(xml.xmlData))
-            t.addfile(tarinfo2, StringIO.StringIO(fail))
+            file1 = BytesIO(xml.xmlData.encode('utf8'))
+            fileinfo1 = tarfile.TarInfo("Hummingbird-to-MAL-Export-" + (time.strftime("%m-%d-%Y")) + ".xml")
+            fileinfo1.size = len(file1.getvalue())
+
+            file2 = BytesIO(fail.encode('utf8'))
+            fileinfo2 = tarfile.TarInfo("Failure-Report.xml")
+            fileinfo2.size = len(file2.getvalue())
+
+            t.addfile(fileinfo1, file1)
+            t.addfile(fileinfo2, file2)
             t.close()
 
             s = c.getvalue()

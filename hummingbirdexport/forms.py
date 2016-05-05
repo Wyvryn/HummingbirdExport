@@ -6,8 +6,8 @@ from hummingbirdexport.models import User
 
 
 class LoginForm(Form):
-    username = TextField(u'Username', validators=[validators.required()])
-    password = PasswordField(u'Password', validators=[validators.optional()])
+    username = TextField('Username', validators=[validators.required()])
+    password = PasswordField('Password', validators=[validators.optional()])
 
     def validate(self):
         check_validate = super(LoginForm, self).validate()
