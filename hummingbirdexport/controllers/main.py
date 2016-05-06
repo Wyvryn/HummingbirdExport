@@ -1,20 +1,25 @@
 from flask import Blueprint, render_template, flash, request, redirect, url_for, make_response
 
-import hummingbirdexport.controllers.getRequest as gr
+from hummingbirdexport.controllers.api import Hummingbird
 import hummingbirdexport.controllers.writeMALXML as wmx
 import hummingbirdexport.controllers.writeXML as wx
 import tarfile
 import time
+import logging
+import sys
 from io import BytesIO
 
 main = Blueprint('main', __name__)
+logger = logging.Logger(logging.DEBUG)
+logger_handler = logging.StreamHandler(sys.stdout)
+logger_handler.setLevel(logging.DEBUG)
+logger.addHandler(logger_handler)
 
 def addResource(zfile, url, fname):
     # get the contents
     contents = urlfetch.fetch(url).content
     # write the contents to the zip file
     zfile.writestr(fname, contents)
-
 
 
 @main.route('/')
@@ -26,14 +31,16 @@ def submit():
     if request.method == 'POST':
         uname =  request.form["uname"]
         method = request.form["method"]
+
+        hummingbird = Hummingbird()
+
         if method == "1":
             """Write MAL Format XML"""
-            resp = gr.getRequest()
-            xml = wmx.writeXML()
+            xml = wmx.writeXML(logger)
 
             xml.writeBof()
 
-            data = resp.getInfo(uname)
+            data = hummingbird.get_library(uname)
             xml.write(data)
 
             fail = xml.writeEof()
@@ -61,12 +68,12 @@ def submit():
 
         if method == "0":
             """Write XML using values from Hummingbird API"""
-            resp = gr.getRequest()
+            hummingbird = Hummingbird()
             xml = wx.writeXML()
 
             xml.writeBof()
 
-            data = resp.getInfo(uname)
+            data = hummingbird.get_library(uname)
             xml.write(data)
 
             xml.writeEof()

@@ -1,5 +1,3 @@
-import time
-
 class writeXML(object):
 
     def __init__(self):

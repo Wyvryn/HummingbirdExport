@@ -1,15 +1,13 @@
-import time
-import requests
-import re
 from redis import StrictRedis
-import logging
 import hummingbirdexport.config as config
+from hummingbirdexport.controllers.api import MyAnimeList
 
 class writeXML(object):
 
-    def __init__(self):
+    def __init__(self, logger):
         self.xmlData = ""
         self.fail = ""
+        self.logger = logger
 
     def writeBof(self):
         self.xmlData += '<?xml version="1.0" encoding="UTF-8" ?>\n'
@@ -29,46 +27,20 @@ class writeXML(object):
         self.fail += '\t<myanimelist>\n\n'
 
     def write(self, data):
-        # Open Redis client if Redis caching enabled.
-        if config.redis['enabled']:
-            redis = StrictRedis(host=config.redis['host'],
-                                port=config.redis['port'],
-                                db=config.redis['db'],
-                                password=config.redis['password'])
-        else:
-            redis = None
-
+        mal_client = MyAnimeList()
+        
         for i in data:
-            if redis:
-                # Check Redis for cached MAL id of anime:
-                malid = redis.get(i['anime']['title'])
-            else:
-                malid = None
+            # Fetch the ID from MAL's Api.
+            title = i['anime']['title'].strip()
+            mal_id = mal_client.get_anime_id(title)
 
-            if not malid:
-                # Wait so MAL doesn't block us.
-                time.sleep(2.5)
+            if mal_id:
+                self.logger.info("Adding {} with id {}".format(title, mal_id))
 
-                # Fetch the ID from MAL's Api.
-                title = i['anime']['title'].strip()
-                url = "http://myanimelist.net/api/anime/search.xml"
-                res = requests.get(url, params=dict(q=title), auth=config.mal_auth)
-                match = re.search(r"<id>(.*)</id>", res.text)
-                if match:
-                    malid = match.group(1)
-                    logging.warn("Adding {} with id {}".format(i['anime']['title'], malid))
-                    if redis:
-                        redis.set(i['anime']['title'], int(malid))
-                else:
-                    logging.warn("Couldn't find id for %s" % i['anime']['title'])
-                    print("Response: {}".format(res.text))
-
-            if malid:
                 self.xmlData += "\t\t<anime>\n"
 
                 self.xmlData += "\t\t\t<series_animedb_id>"
-
-                self.xmlData += str(malid)
+                self.xmlData += mal_id
                 self.xmlData += "</series_animedb_id>\n"
 
                 self.xmlData += "\t\t\t<series_title>"
@@ -136,6 +108,8 @@ class writeXML(object):
 
                 self.xmlData += "\t\t</anime>\n\n"
             else:
+                self.logger.info("Couldn't find id for %s" % title)
+
                 self.fail += "\t\t<anime>\n"
                 self.fail += "\t\t\t<series_title>"
                 if i['anime']['title']:
