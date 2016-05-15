@@ -1,15 +1,13 @@
-import time
-import requests
-import re
-import redis
-import logging
-from hummingbirdexport.keys import redisPw, httpAuth, httpUserAgent
+from redis import StrictRedis
+import hummingbirdexport.config as config
+from hummingbirdexport.controllers.api import MyAnimeList
 
 class writeXML(object):
 
-    def __init__(self):
+    def __init__(self, logger):
         self.xmlData = ""
         self.fail = ""
+        self.logger = logger
 
     def writeBof(self):
         self.xmlData += '<?xml version="1.0" encoding="UTF-8" ?>\n'
@@ -29,45 +27,25 @@ class writeXML(object):
         self.fail += '\t<myanimelist>\n\n'
 
     def write(self, data):
+        mal_client = MyAnimeList()
+        
         for i in data:
-            from hummingbirdexport.keys import r
-            res = redis.StrictRedis(host=r['host'], port=r['port'], db=r['db'],
-                password = redisPw)
-            malid = res.get(i['anime']['title'].encode('utf8'))
+            # Fetch the ID from MAL's Api.
+            title = i['anime']['title'].strip()
+            mal_id = mal_client.get_anime_id(title)
 
-            if not malid:
-                title = i['anime']['title'].encode('utf8')
-                title = title.strip()
-                title = title.replace(" ", "%20")
-                url = "http://myanimelist.net/api/anime/search.xml?q=%s" % title
-                headers = {
-                    'Authorization': httpAuth,
-                    'User-Agent': httpUserAgent}
-                r = requests.get(url, headers=headers)
-                try:
-                    x = re.compile(".*<id>").split(r.text.encode('utf8'))
-                    y = re.compile("</id>.*").split(x[1])
-                    malid = y[0]
-                except:
-                    logging.warn("Couldn't find id for %s" % i['anime']['title'])
+            if mal_id:
+                self.logger.info("Adding {} with id {}".format(title, mal_id))
 
-                if malid:
-                    logging.warn("Addind %s with id %s" % (i['anime']['title'].encode('utf8'), malid))
-                    res.set(i['anime']['title'].encode('utf8'), int(malid))
-
-            if malid:
                 self.xmlData += "\t\t<anime>\n"
 
                 self.xmlData += "\t\t\t<series_animedb_id>"
-
-                self.xmlData += malid
+                self.xmlData += mal_id
                 self.xmlData += "</series_animedb_id>\n"
 
                 self.xmlData += "\t\t\t<series_title>"
                 if i['anime']['title']:
-
-                    self.xmlData += "<![CDATA[" + i[
-                        'anime']['title'].encode('utf8') + "]]>"
+                    self.xmlData += "<![CDATA[" + i['anime']['title'] + "]]>"
                 self.xmlData += "</series_title>\n"
 
                 self.xmlData += "\t\t\t<series_type></series_type>\n"
@@ -110,7 +88,7 @@ class writeXML(object):
                 self.xmlData += "\t\t\t<my_comments>"
                 self.xmlData += "<![CDATA["
                 if i['notes']:
-                    self.xmlData += i['notes'].encode('utf8')
+                    self.xmlData += i['notes']
                 self.xmlData += "]]></my_comments>\n"
 
                 self.xmlData += "\t\t\t<my_times_watched>"
@@ -130,10 +108,12 @@ class writeXML(object):
 
                 self.xmlData += "\t\t</anime>\n\n"
             else:
+                self.logger.info("Couldn't find id for %s" % title)
+
                 self.fail += "\t\t<anime>\n"
                 self.fail += "\t\t\t<series_title>"
                 if i['anime']['title']:
-                    self.fail += "<![CDATA[" + i['anime']['title'].encode('utf8') + "]]>"
+                    self.fail += "<![CDATA[" + i['anime']['title'] + "]]>"
                 self.fail += "</series_title>\n"
 
                 self.fail += "\t\t\t<id>"
@@ -143,7 +123,7 @@ class writeXML(object):
 
                 self.fail += "\t\t\t<series_type>"
                 if i['anime']['show_type']:
-                    self.fail += i['anime']['show_type'].encode('utf8')
+                    self.fail += i['anime']['show_type']
                 self.fail += "</series_type>\n"
 
                 self.fail += "\t\t\t<series_episodes>"
@@ -163,7 +143,7 @@ class writeXML(object):
 
                 self.fail += "\t\t\t<my_status>"
                 if i['status']:
-                    self.fail += i['status'].encode('utf8')
+                    self.fail += i['status']
                 self.fail += "</my_status>\n"
 
                 self.fail += "\t\t\t<my_times_watched>"
@@ -173,12 +153,12 @@ class writeXML(object):
 
                 self.fail += "\t\t\t<my_comments>"
                 if i['notes']:
-                    self.fail += "<![CDATA[" + i['notes'].encode('utf8') + "]]>"
+                    self.fail += "<![CDATA[" + i['notes'] + "]]>"
                 self.fail += "</my_comments>\n"
 
                 self.fail += "\t\t\t<last_watched>"
                 if i['last_watched']:
-                    self.fail += i['last_watched'].encode('utf8')
+                    self.fail += i['last_watched']
                 self.fail += "</last_watched>\n"
 
                 self.fail += "\t\t</anime>\n\n"

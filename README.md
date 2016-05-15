@@ -1,10 +1,10 @@
 # Hummingbird Export
 
-This app is developed in Python using Flask to allow [Hummingbird](http://hummingbird.me) users to download their viewing statistics as an XML file.
+This app is developed in Python 3 using Flask to allow [Hummingbird](http://hummingbird.me) users to download their viewing statistics as an XML file.
 
-Experimental functionality has been added to create an xml file that is importable on [MyAnimeList](http://myanimelist.net).
+Experimental functionality has been added to create an XML file that is importable on [MyAnimeList](http://myanimelist.net).
 
-To run locally, populate the data in `hummingbirdexport/keys.py.template` and save it as `hummingbirdexport/keys.py`
+To run locally, populate the data in `hummingbirdexport/config.py.template` and save it as `hummingbirdexport/config.py`.
 
 See it in action at [http://illyasviel.moe/hummingbird/](http://hummingbird.illyasviel.moe/)
 

@@ -1,0 +1,27 @@
+# Redis Caching
+# Results from MAL can be cached with Redis to speed up conversion.
+#
+# Options:
+# - enabled: Only if True Redis caching will be used.
+# - host: Host of Redis server.
+# - port: Port of Redis server.
+# - password: Password of Redis server. Empty string by default.
+# - db: Database number on Redis server.
+redis = {
+    'enabled': True,
+    'host': 'localhost',
+    'port': 6379,
+    'password': '',
+    'db': 0
+}
+
+# MyAnimeList API access
+# Provide the credentials of a MAL user that will be used for retrieval of MAL ids.
+mal_auth = ('USER', 'PASSWORD')
+
+# Hummingbird API access
+# humming_auth: pair of hummingbird credentials (TODO is this needed?)
+# humming_mashape: mashape hummingbird api key
+humming_auth = {'username': 'USER', 'password': 'PASSWORD'}
+humming_mashape = 'KEY'
+

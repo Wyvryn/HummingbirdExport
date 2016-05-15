@@ -6,12 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel=stylesheet type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
+  </head>
 
   <body>
-
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -22,41 +21,29 @@
 
     <div class="container">
       <div class="well">
-        <form class="form-horizontal" method="post" action="/submit">
-          <fieldset>
-
-          <!-- Form Name -->
+        <form method="post" action="/submit">
           <legend>Export Hummingbird Viewing Stats</legend>
 
-          <!-- Text input-->
-          <div class="control-group">
-            <label class="control-label" for="uname">Username</label>
-            <div class="controls">
-              <input id="uname" name="uname" type="text" class='input-xlarge'>
-            </div>
-          </div>
-          <div class="control-group">
-              <label class="control-label" for="method">Format</label>
-              <div class="controls">
-                <select id="method" name="method" class="input-xlarge">
-                  <option value="0">Hummingbird</option>
-                  <option value="1">MAL Compatible - Experimental</option>
-                </select>
-              </div>
-            </div>
-
-
+          <fieldset class="form-group">
+            <label for="uname">Username</label>
+            <input type="text" name="uname" id="uname" class="input-xlarge">
           </fieldset>
-          <button class="btn btn-primary" type="submit">Export</button>
+
+          <fieldset class="form-group">
+            <label for="method">Format</label>
+            <select id="method" name="method" class="input-xlarge">
+              <option value="0">Hummingbird</option>
+              <option value="1">MAL Compatible</option>
+            </select>
+          </fieldset>
+
+          <fieldset class="form-group">
+            <button class="btn btn-primary" type="submit">Export</button>
+          </fieldset>
         </form>
+
         <center><small>Written by <a href="http://hummingbird.me/users/Wyvryn/feed">Wyvryn</a> --- View source at <a href="https://github.com/Wyvryn/HummingbirdExport/">Github</a></small></center>
       </div>
-    </div> <!-- /container -->
-
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    </div>
   </body>
 </html>

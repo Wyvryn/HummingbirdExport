@@ -17,12 +17,11 @@ class writeXML(object):
     def write(self, data):
         for i in data:
 
-
             self.xmlData += "\t\t<anime>\n"
 
             self.xmlData += "\t\t\t<series_title>"
             if i['anime']['title']:
-                self.xmlData += i['anime']['title'].encode('utf8').replace('&', '&amp;')
+                self.xmlData += i['anime']['title'].replace('&', '&amp;')
             self.xmlData += "</series_title>\n"
 
             self.xmlData += "\t\t\t<id>"
@@ -32,7 +31,7 @@ class writeXML(object):
 
             self.xmlData += "\t\t\t<series_type>"
             if i['anime']['show_type']:
-                self.xmlData += i['anime']['show_type'].encode('utf8')
+                self.xmlData += i['anime']['show_type']
             self.xmlData += "</series_type>\n"
 
             self.xmlData += "\t\t\t<series_episodes>"
@@ -47,12 +46,12 @@ class writeXML(object):
 
             self.xmlData += "\t\t\t<my_score>"
             if i['rating']['value']:
-                self.xmlData += i['rating']['value'].encode('utf8')
+                self.xmlData += i['rating']['value']
             self.xmlData += "</my_score>\n"
 
             self.xmlData += "\t\t\t<my_status>"
             if i['status']:
-                self.xmlData += i['status'].encode('utf8')
+                self.xmlData += i['status']
             self.xmlData += "</my_status>\n"
 
             self.xmlData += "\t\t\t<my_times_watched>"
@@ -62,12 +61,12 @@ class writeXML(object):
 
             self.xmlData += "\t\t\t<my_notes>"
             if i['notes']:
-                self.xmlData += i['notes'].encode('utf8')
+                self.xmlData += i['notes']
             self.xmlData += "</my_notes>\n"
 
             self.xmlData += "\t\t\t<last_watched>"
             if i['last_watched']:
-                self.xmlData += i['last_watched'].encode('utf8')
+                self.xmlData += i['last_watched']
             self.xmlData += "</last_watched>\n"
 
             self.xmlData += "\t\t</anime>\n\n"

@@ -216,3 +216,9 @@ pip-log.txt
 
 #Keys
 keys.py
+config.py
+
+# Virtualenv
+pyenv
+virtenv
+
