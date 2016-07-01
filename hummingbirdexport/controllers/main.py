@@ -41,6 +41,9 @@ def submit():
             xml.writeBof()
 
             data = hummingbird.get_library(uname)
+            if data.get("error"):
+                print("ERROR: Hummingbird API: {}".format(data["error"]))
+
             xml.write(data)
 
             fail = xml.writeEof()
