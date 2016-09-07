@@ -20,7 +20,7 @@ redis = {
 mal_auth = ('USER', 'PASSWORD')
 
 # Hummingbird API access
-# humming_auth: pair of hummingbird credentials (TODO is this needed?)
+# humming_auth: pair of hummingbird credentials
 # humming_mashape: mashape hummingbird api key
 humming_auth = {'username': 'USER', 'password': 'PASSWORD'}
 humming_mashape = 'KEY'
