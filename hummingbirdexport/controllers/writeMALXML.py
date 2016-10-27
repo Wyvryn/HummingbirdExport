@@ -1,6 +1,5 @@
-from redis import StrictRedis
-import hummingbirdexport.config as config
 from hummingbirdexport.controllers.api import MyAnimeList
+
 
 class writeXML(object):
 
@@ -28,7 +27,7 @@ class writeXML(object):
 
     def write(self, data):
         mal_client = MyAnimeList()
-        
+
         for i in data:
             # Fetch the ID from MAL's Api.
             title = i['anime']['title'].strip()

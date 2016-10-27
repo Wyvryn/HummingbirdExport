@@ -1,19 +1,21 @@
-from flask import Blueprint, render_template, flash, request, redirect, url_for, make_response
-
-from hummingbirdexport.controllers.api import Hummingbird
-import hummingbirdexport.controllers.writeMALXML as wmx
-import hummingbirdexport.controllers.writeXML as wx
-import tarfile
-import time
 import logging
 import sys
+import tarfile
+import time
 from io import BytesIO
+
+import hummingbirdexport.controllers.writeMALXML as wmx
+import hummingbirdexport.controllers.writeXML as wx
+from flask import abort, Blueprint, make_response, render_template, request
+from hummingbirdexport.controllers.api import Hummingbird
+import urlfetch
 
 main = Blueprint('main', __name__)
 logger = logging.Logger(logging.DEBUG)
 logger_handler = logging.StreamHandler(sys.stdout)
 logger_handler.setLevel(logging.DEBUG)
 logger.addHandler(logger_handler)
+
 
 def addResource(zfile, url, fname):
     # get the contents
@@ -26,10 +28,11 @@ def addResource(zfile, url, fname):
 def index():
     return render_template('main.html')
 
+
 @main.route('/submit', methods=["POST"])
 def submit():
     if request.method == 'POST':
-        uname =  request.form["uname"]
+        uname = request.form["uname"]
         method = request.form["method"]
 
         hummingbird = Hummingbird()
@@ -39,10 +42,10 @@ def submit():
             xml = wmx.writeXML(logger)
 
             xml.writeBof()
-
-            data = hummingbird.get_library(uname)
-            if data.get("error"):
-                print("ERROR: Hummingbird API: {}".format(data["error"]))
+            try:
+                data = hummingbird.get_library(uname)
+            except:
+                print("ERROR: Hummingbird API: {}".format(sys.exc_info()[0]))
 
             xml.write(data)
 
@@ -66,7 +69,8 @@ def submit():
             s = c.getvalue()
 
             response = make_response(s)
-            response.headers["Content-Disposition"] = "attachment; filename=Hummingbird-to-MAL-Export-" + (time.strftime("%m-%d-%Y")) + ".tar"
+            response.headers["Content-Disposition"] = "attachment; filename=Hummingbird-to-MAL-Export-" + (
+                time.strftime("%m-%d-%Y")) + ".tar"
             return response
 
         if method == "0":
@@ -82,7 +86,8 @@ def submit():
             xml.writeEof()
 
             response = make_response(xml.xmlData)
-            response.headers["Content-Disposition"] = "attachment; filename=Hummingbird-Export-" + (time.strftime("%m-%d-%Y")) + ".xml"
+            response.headers["Content-Disposition"] = "attachment; filename=Hummingbird-Export-" + (
+                time.strftime("%m-%d-%Y")) + ".xml"
             return response
 
     else:

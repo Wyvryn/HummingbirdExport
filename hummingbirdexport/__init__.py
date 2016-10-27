@@ -1,10 +1,6 @@
 #! ../env/bin/python
 # -*- coding: utf-8 -*-
 
-__author__ = 'wyvryn'
-__email__ = '~'
-__version__ = '1.0'
-
 from flask import Flask
 from webassets.loaders import PythonLoader as PythonAssetsLoader
 

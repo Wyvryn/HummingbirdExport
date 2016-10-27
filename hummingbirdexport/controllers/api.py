@@ -1,15 +1,19 @@
 import json
 import re
-import redis
-import requests
 import time
+
+import requests
+
 import hummingbirdexport.config as config
+import redis
+
 
 class Hummingbird:
+
     def __init__(self):
         # Authenticate Hummingbird API client
         url = 'https://hummingbirdv1.p.mashape.com/users/authenticate'
-        self.headers = { "X-Mashape-Authorization": config.humming_mashape }
+        self.headers = {"X-Mashape-Authorization": config.humming_mashape}
         response = requests.post(url, headers=self.headers, data=config.humming_auth)
         self.auth_token = response.text[1:-1]
 
@@ -20,7 +24,9 @@ class Hummingbird:
 
         return json.loads(response.text)
 
+
 class MyAnimeList:
+
     def __init__(self):
         # Connect to Redis if Redis caching is enabled.
         if config.redis['enabled']:
@@ -30,7 +36,6 @@ class MyAnimeList:
                                            password=config.redis['password'])
         else:
             self.redis = None
-
 
     def get_anime_id(self, title):
         """Attempt to find the id of an anime by its title.
@@ -48,7 +53,7 @@ class MyAnimeList:
         time.sleep(2.5)
         url = "http://myanimelist.net/api/anime/search.xml"
         response = requests.get(url, params=dict(q=title.strip()), auth=config.mal_auth)
-        
+
         match = re.search(r"<id>(.*)</id>", response.text)
         if match:
             anime_id = match.group(1)
@@ -57,4 +62,3 @@ class MyAnimeList:
             return anime_id
         else:
             return None
-

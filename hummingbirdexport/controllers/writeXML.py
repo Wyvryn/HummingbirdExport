@@ -1,5 +1,6 @@
 import time
 
+
 class writeXML(object):
 
     def __init__(self):
@@ -71,7 +72,5 @@ class writeXML(object):
 
             self.xmlData += "\t\t</anime>\n\n"
 
-
     def writeEof(self):
         self.xmlData += '\t</hummingbird>\n\n'
-

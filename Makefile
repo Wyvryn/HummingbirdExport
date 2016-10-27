@@ -10,7 +10,7 @@ help:
 env:
 	sudo easy_install pip && \
 	pip install virtualenv && \
-	virtualenv env && \
+	virtualenv -p python3 env && \
 	. env/bin/activate && \
 	make deps
 
@@ -18,10 +18,10 @@ deps:
 	pip install -r requirements.txt
 
 clean:
-	python manage.py clean
+	find . -name \*.pyc -delete
 
 lint:
 	flake8 --exclude=env .
 
-test:
-	py.test tests
+isort:
+	isort --recursive hummingbirdexport/.
