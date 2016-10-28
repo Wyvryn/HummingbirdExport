@@ -6,7 +6,9 @@ Experimental functionality has been added to create an XML file that is importab
 
 To run locally, populate the data in `hummingbirdexport/config.py.template` and save it as `hummingbirdexport/config.py`.
 
-See it in action at [http://illyasviel.moe/hummingbird/](http://hummingbird.illyasviel.moe/)
+Run `make env` to build the virtualenv, `source ./env/bin/activate` to activate the virtualenv, and finally `python manage.py runserver`
+
+See it in action at [http://hummingbird.illyasviel.moe/](http://hummingbird.illyasviel.moe/)
 
 ##License
 Code is licensed under CC BY-SA 4.0
